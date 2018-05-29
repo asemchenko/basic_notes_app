@@ -4,7 +4,9 @@ import django.http
 
 
 def index(request):
-    return render(request, 'notes/index.html', {'notes': Note.objects.all()})
+    # sorting in reverse order
+    notes = Note.objects.all().order_by('-count_unique_words')
+    return render(request, 'notes/index.html', {'notes': notes})
 
 
 def add_note(request):
