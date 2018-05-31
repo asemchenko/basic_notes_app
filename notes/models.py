@@ -1,6 +1,10 @@
 from django.db import models
 from django import forms
 import re
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.FileHandler('log.txt'))
 
 
 class Note(models.Model):
@@ -16,8 +20,11 @@ class Note(models.Model):
     def create(cls, title, text):
         note = cls(title=title, text=text)
         # calculation unique words count
-        words = re.split(r'\.|,|:| |!|\?', str(text).lower())
-        note.count_unique_words = len(set(words))
+        words =  set(re.split(r'[.,: !?\n\r\t-]+', str(text).lower()))
+        if '' in words:
+                words.remove('')
+        logger.debug('Adding note "%s". Unique words: %s'%(str(note), str(words)))
+        note.count_unique_words = len(words)
         return note
 
 
